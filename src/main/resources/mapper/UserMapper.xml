@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zm.springbootvue.mapper.UserMapper">
+<!--    批量插入-->
+    <insert id="insertUserList">
+        insert into sys_user (username,password,nickname,email,phone,address)
+        values
+        <foreach collection="userList" item="user" index="index" separator=",">
+            (#{user.username},#{user.password},#{user.nickname},#{user.email},#{user.phone},#{user.address})
+        </foreach>
+
+    </insert>
+    <update id="update">
+        update sys_user
+        <set>
+            <if test="username != null">
+                username=#{username},
+            </if>
+<!--            <if test="password != null">-->
+<!--                password=#{password},-->
+<!--            </if>-->
+            <if test="nickname  != null">
+                nickname=#{nickname},
+            </if>
+            <if test="email != null">
+                email=#{email},
+            </if>
+            <if test="phone != null">
+                phone=#{phone},
+            </if>
+            <if test="address != null">
+                address=#{address}
+            </if>
+        </set>
+        <where>
+            id=#{id}
+        </where>
+    </update>
+    <!--  批量删除-->
+    <delete id="deleteBatch">
+        delete from sys_user where id in
+        <foreach item="ids" collection="list" index="index" open="("
+                 separator="," close=")">
+            #{ids}
+        </foreach>
+    </delete>
+
+
+    <!--    有id就根据id查询，没有就根据名字查询-->
+    <select id="selectPage" resultType="com.zm.springbootvue.entity.User">
+        select * from sys_user
+        <where>
+            <choose>
+                <when test="id != null">
+                     id = #{id}
+                </when>
+                <when test="username !=null or nickname != null">
+                    <if test="username != null and username != ''">
+                        username like concat('%',#{username},'%')
+                    </if>
+                    <if test="nickname != null and nickname != ''">
+                        or nickname like concat('%',#{nickname},'%')
+                    </if>
+                </when>
+            </choose>
+        </where>
+
+        limit #{pageNum},#{pageSize}
+    </select>
+<!--    模糊查询统计数据-->
+    <select id="selectTotal" resultType="java.lang.Integer">
+        select count(*) from sys_user
+        <where>
+            <choose>
+                <when test="id != null">
+                    id = #{id}
+                </when>
+                <when test="username !=null or nickname != null">
+                    <if test="nickname != null and nickname != ''">
+                        nickname like concat('%',#{nickname},'%')
+                    </if>
+                    <if test="username != null and username != ''">
+                        or username like concat('%',#{username},'%')
+                    </if>
+                </when>
+            </choose>
+        </where>
+
+    </select>
+</mapper>
+<!--
+    //@Select("select * from sys_user where username like concat('%',#{username},'%') limit #{pageNum},#{pageSize}")-->
