@@ -12,6 +12,7 @@
         </foreach>
 
     </insert>
+<!--    更新-->
     <update id="update">
         update sys_user
         <set>

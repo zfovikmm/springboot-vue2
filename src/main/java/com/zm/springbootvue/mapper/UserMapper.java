@@ -42,4 +42,6 @@ public interface UserMapper {
     Boolean insertUserList(@Param("userList") List<User> userList);
 
     //登录
+    @Select("select * from sys_user WHERE username = #{username} and password = #{password}")
+    User getInfo(@Param("username") String username,@Param("password") String password);
 }

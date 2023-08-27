@@ -8,6 +8,7 @@ import com.zm.springbootvue.Service.UserService;
 import com.zm.springbootvue.controller.UserDTO.UserDTO;
 import com.zm.springbootvue.entity.User;
 import com.zm.springbootvue.mapper.UserMapper;
+import org.apache.ibatis.annotations.Select;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,6 +35,10 @@ public class UserController {
     @PostMapping
     public Integer save(@RequestBody User user){
         //新增或者更新
+        //初始化密码
+        if( user.getPassword() == null){
+            user.setPassword("123456");
+        }
         return userService.save(user);
     }
 
@@ -85,7 +90,7 @@ public class UserController {
         }
     }
 
-
+    //导出
     @GetMapping("/export")
     public void export(HttpServletResponse response) throws Exception{
         //从数据库查询出所有的数据
@@ -130,12 +135,23 @@ public class UserController {
 
     //登录 @RequestBody前端传的json变为java对象
     @PostMapping("/login")
-    private boolean login(@RequestBody UserDTO userDTO){
-        String username = userDTO.getUsername();
-        String password = userDTO.getPassword();
+    public boolean login(@RequestBody User user){
+        String username = user.getUsername();
+        String password = user.getPassword();
         if(StrUtil.isBlank(username) || StrUtil.isBlank(password)){
             return false;
         }
-        return userService.login(userDTO);
+        return userService.login(user);
     }
+
+//    @PostMapping("/login")
+//    public String login(@RequestBody String username,@RequestBody String password){
+//        User user = userService.LoginIn(username,password);
+//        System.out.println(user);
+//        if(user != null){
+//            return "success";
+//        }else {
+//            return "error";
+//        }
+//    }
 }

@@ -26,20 +26,14 @@ public class UserService {
         return userMapper.findAll();
     }
 
-    public List<User> listLoad(QueryWrapper<User> queryWrapper){
-        return userMapper.findAll();
-    }
-
     //批量插入
     public Boolean saveBatch(List<User> userList){
         return userMapper.insertUserList(userList);
     }
 
-    public boolean login(UserDTO userDTO) {
-        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("username",userDTO.getUsername());
-        queryWrapper.eq("password",userDTO.getPassword());
-        List<User> listload= listLoad(queryWrapper);
-        return listload.size() != 0;
+    public boolean login(User user) {
+        User userload = userMapper.getInfo(user.getUsername(),user.getPassword());
+        return userload != null;
     }
+
 }

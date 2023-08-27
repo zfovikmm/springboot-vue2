@@ -12,9 +12,38 @@
 
         <div style="margin: 10px 0;text-align: right">
           <el-button type="primary" size="small" autocomplete="off" @click="login">登录</el-button>
-          <el-button type="primary" size="small" autocomplete="off">注册</el-button>
+          <el-button type="primary" size="small" autocomplete="off" @click="handlEnroll">注册</el-button>
         </div>
       </el-form>
+
+<!--      注册窗口-->
+      <el-dialog title="用户信息" :visible.sync="dialogFormVisible">
+        <el-form label-width="120px">
+          <el-form-item label="用户名" >
+            <el-input v-model="form.username" autocomplete="off" aria-required="true"></el-input>
+          </el-form-item>
+          <el-form-item label="密码">
+            <el-input v-model="form.password" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="昵称">
+            <el-input v-model="form.nickname" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="邮箱">
+            <el-input v-model="form.email" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="电话">
+            <el-input v-model="form.phone" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="地址">
+            <el-input v-model="form.address" autocomplete="off"></el-input>
+          </el-form-item>
+
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="handleEditCancel">取 消</el-button>
+          <el-button type="primary" @click="save">确 定</el-button>
+        </div>
+      </el-dialog>
 
     </div>
   </div>
@@ -25,7 +54,15 @@ export default {
   name: "Login",
   data(){
     return{
-      user:{},
+      user: {},
+      form: {},
+      id: "",
+      username: "",
+      password: "",
+      email: "",
+      address: "",
+      nickname: "",
+      dialogFormVisible: false,
       rules: {
           username:[  //trigger: 'blur'失焦时会触发
             {required: true,message:"请输入用户名",trigger: 'blur'},
@@ -54,7 +91,26 @@ export default {
           return false;
         }
       });
-    }
+    },
+    handlEnroll(){
+      this.dialogFormVisible = true
+      this.form = {}
+    },
+    handleEditCancel(){
+      this.dialogFormVisible = false
+      this.form = {}
+    },
+    save(){
+      this.request.post("/user",this.form).then(res => { // 发送POST请求将表单数据保存到服务器端
+        if(res){
+          this.$message.success("注册成功")
+          this.dialogFormVisible = false
+        }else {
+          this.$message.error("注册失败")
+          this.dialogFormVisible = false
+        }
+      })
+    },
   }
 }
 </script>
